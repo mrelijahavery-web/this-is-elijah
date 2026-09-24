@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elijah Avery — Experimental Biophysicist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0a0a0a;
+    --paper:#f6f4ef;
+    --accent:#d6001c;
+    --muted:#5c5c5c;
+    --line:2px solid var(--ink);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',system-ui,sans-serif;
+    line-height:1.55;
+  }
+  a{color:var(--accent);}
+  a:focus-visible, button:focus-visible{outline:3px solid var(--accent); outline-offset:2px;}
+  .mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;}
+  .wrap{max-width:760px; margin:0 auto; padding:0 24px;}
+
+  header.site{
+    position:sticky; top:0; z-index:10;
+    background:var(--paper);
+    border-bottom:var(--line);
+  }
+  nav{
+    display:flex; flex-wrap:wrap; gap:4px 18px;
+    padding:14px 24px; max-width:760px; margin:0 auto;
+    font-family:'IBM Plex Mono',monospace; font-size:0.85rem;
+  }
+  nav a{color:var(--ink); text-decoration:none; white-space:nowrap;}
+  nav a:hover{color:var(--accent);}
+  nav .prompt{color:var(--accent);}
+
+  .hero{padding:64px 0 48px; border-bottom:var(--line);}
+  .hero .kicker{font-family:'IBM Plex Mono',monospace; color:var(--muted); font-size:0.9rem; margin:0 0 10px;}
+  .hero h1{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:clamp(2.1rem, 6vw, 3.2rem);
+    font-weight:700; margin:0 0 14px; line-height:1.1;
+  }
+  .cursor{display:inline-block; width:0.5ch; background:var(--accent); animation:blink 1s steps(1) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  @media (prefers-reduced-motion: reduce){.cursor{animation:none;}}
+  .hero p.lede{font-size:1.05rem; max-width:56ch; margin:0 0 18px;}
+  .hero .meta{font-family:'IBM Plex Mono',monospace; font-size:0.85rem; color:var(--muted);}
+
+  section{padding:44px 0; border-bottom:var(--line);}
+  section:last-of-type{border-bottom:none;}
+  .label{
+    font-family:'IBM Plex Mono',monospace; font-size:0.85rem;
+    color:var(--accent); margin:0 0 22px;
+  }
+  .label::before{content:"$ "; color:var(--muted);}
+  h2.title{font-family:'IBM Plex Mono',monospace; font-size:1.5rem; margin:0 0 6px;}
+
+  .entry{padding:18px 0; border-top:1px solid #d8d5cc;}
+  .entry:first-child{border-top:none; padding-top:0;}
+  .entry h3{font-size:1.05rem; margin:0 0 4px; font-weight:600;}
+  .entry .when{font-family:'IBM Plex Mono',monospace; font-size:0.8rem; color:var(--muted); margin-bottom:8px;}
+  .entry p{margin:0 0 8px; max-width:64ch;}
+  .tags{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;}
+  .tag{
+    font-family:'IBM Plex Mono',monospace; font-size:0.78rem;
+    border:1.5px solid var(--ink); padding:2px 8px; white-space:nowrap;
+  }
+
+  .pubs{list-style:none; margin:0; padding:0;}
+  .pubs li{padding:14px 0; border-top:1px solid #d8d5cc; max-width:64ch;}
+  .pubs li:first-child{border-top:none; padding-top:0;}
+  .pubs .doi{font-family:'IBM Plex Mono',monospace; font-size:0.8rem;}
+
+  .honors{margin:0; padding-left:20px;}
+  .honors li{margin-bottom:6px;}
+
+  .curio-grid{display:grid; grid-template-columns:1fr; gap:14px;}
+  .curio{border:1.5px solid var(--ink); padding:14px 16px;}
+  .curio h4{margin:0 0 4px; font-size:0.95rem; font-family:'IBM Plex Mono',monospace;}
+  .curio p{margin:0; font-size:0.92rem; color:var(--muted);}
+
+  footer{padding:40px 0 60px;}
+  .contact-box{border:var(--line); padding:22px 24px;}
+  .contact-box a.mail{font-family:'IBM Plex Mono',monospace; font-size:1.05rem; font-weight:600;}
+  .links{margin-top:14px; font-family:'IBM Plex Mono',monospace; font-size:0.85rem; display:flex; gap:16px; flex-wrap:wrap;}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <nav>
+    <span class="prompt">~/avery $</span>
+    <a href="#research">research</a>
+    <a href="#coding">projects</a>
+    <a href="#personal">personal</a>
+    <a href="#interests">interests</a>
+    <a href="#contact">contact</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <p class="kicker">// experimental biophysics</p>
+    <h1>Elijah Avery<span class="cursor">&nbsp;</span></h1>
+    <p class="lede">I study how light moves matter — optical trapping, microrheology, and differential dynamic microscopy at the micron scale, plus the code and infrastructure that makes the data usable.</p>
+    <p class="meta">Los Angeles, CA — McGorty Lab of Fluids and Photons, University of San Diego</p>
+  </section>
+
+  <section id="research">
+    <p class="label">research</p>
+
+    <div class="entry">
+      <h3>Research Assistant — The McGorty Lab of Fluids and Photons</h3>
+      <p class="when">University of San Diego · Aug 2024 – Present</p>
+      <p>Optical trapping of micron-sized particles for microrheology and transport studies. Calibrate the trapping system, write custom Python to drive the spatial light modulator, track particles, run differential dynamic microscopy analysis, and generate figures for publication.</p>
+      <div class="tags"><span class="tag">optical trapping</span><span class="tag">DDM</span><span class="tag">Python</span><span class="tag">SLM control</span></div>
+    </div>
+
+    <div class="entry">
+      <h3>Researcher — The Chung Laboratory for Biomaterials and Nanomedicine</h3>
+      <p class="when">University of Southern California · Jun 2023 – Aug 2024</p>
+      <p>Mammalian cell culture, differential centrifugation, FMOC-based solid-state peptide synthesis, gel electrophoresis, liquid chromatography, mass spectrometry, and MALDI-TOF, in support of engineered extracellular-vesicle therapeutics.</p>
+      <div class="tags"><span class="tag">cell culture</span><span class="tag">peptide synthesis</span><span class="tag">mass spec</span></div>
+    </div>
+
+    <h2 class="title" style="margin-top:36px;">Publications</h2>
+    <ul class="pubs">
+      <li>
+        Patel, N., LaMastro, V., Giblin, J., Avery, E., Noor, B., Magee, G., &amp; Chung, E.J. Genetically engineering cells to produce therapeutically boosted extracellular vesicles for cardiovascular calcification. <em>Biomaterials</em>, 325, 123552 (2026).
+        <div class="doi"><a href="https://doi.org/10.1016/j.biomaterials.2025.123552">doi.org/10.1016/j.biomaterials.2025.123552</a></div>
+      </li>
+      <li>
+        Patel, N., Avery, E., Huang, Y., &amp; Chung, E.J. Developing therapeutically enhanced extracellular vesicles for atherosclerosis therapy. <em>Advanced Healthcare Materials</em>, 14, 2404398 (2025).
+        <div class="doi"><a href="https://doi.org/10.1002/adhm.202404398">doi.org/10.1002/adhm.202404398</a></div>
+      </li>
+      <li>
+        Patel, N., Avery, E., &amp; Chung, E.J. Supramolecular hydrogels for sustained extracellular vesicle delivery. <em>MRS Communications</em>, 14, 1037–1044 (2024).
+        <div class="doi"><a href="https://doi.org/10.1557/s43579-024-00589-6">doi.org/10.1557/s43579-024-00589-6</a></div>
+      </li>
+    </ul>
+
+    <h2 class="title" style="margin-top:36px;">Education &amp; honors</h2>
+    <div class="entry">
+      <h3>B.S., Biophysics — University of San Diego</h3>
+      <p class="when">Advisor: Dr. Ryan McGorty · 2026</p>
+    </div>
+    <div class="entry">
+      <h3>A.S., General Math &amp; Science — Rio Hondo College</h3>
+      <p class="when">2024</p>
+    </div>
+    <ul class="honors">
+      <li>Best Poster Presentation, USC TRAINS poster session</li>
+      <li>Rio Hondo College Physics "Student of the Year," 2023–2024</li>
+      <li>Honorable Mention, ENLACE Poster Session</li>
+      <li>Dean's List, four consecutive semesters</li>
+    </ul>
+  </section>
+
+  <section id="coding">
+    <p class="label">projects</p>
+
+    <div class="entry">
+      <h3>Optical-trapping &amp; DDM analysis pipeline</h3>
+      <p>A structured xarray Dataset holding optical trapping and DDM data across trap count, laser power, and trial dimensions. Includes a "closest pair" outlier-detection method built for small sample sizes, interactive domain-by-domain review tooling for flagging and NaN-ing bad points, and correct error propagation through the nonlinear 1/τ transform.</p>
+      <div class="tags"><span class="tag">xarray</span><span class="tag">Python</span><span class="tag">error propagation</span></div>
+    </div>
+
+    <div class="entry">
+      <h3>Homelab &amp; agentic AI infrastructure</h3>
+      <p>Self-hosted stack on Proxmox VE and TrueNAS SCALE: Jellyfin, Nextcloud, Vaultwarden, a VPN'd qBittorrent + *arr stack, and Tailscale for remote access. Currently extending it with Ollama, Open WebUI, and n8n to explore agentic AI running on local hardware, with a repurposed gaming laptop earmarked as an inference node and a home sensor network (starting with garden irrigation) planned next.</p>
+      <div class="tags"><span class="tag">Proxmox</span><span class="tag">TrueNAS</span><span class="tag">Ollama</span><span class="tag">n8n</span><span class="tag">self-hosting</span></div>
+    </div>
+  </section>
+
+  <section id="personal">
+    <p class="label">personal</p>
+    <div class="entry">
+      <h3>2010 Mazda3 electronics rebuild</h3>
+      <p>Ground-up DIY upgrade: full speaker and dash audio replacement, a heated-seat retrofit, and an advanced keyless-entry (proximity door-handle) retrofit — all reverse-engineered and installed by hand.</p>
+      <div class="tags"><span class="tag">wiring</span><span class="tag">automotive electronics</span></div>
+    </div>
+    <div class="entry">
+      <h3>Home garden &amp; irrigation</h3>
+      <p>Fruit-tree gardening with a hand-built irrigation setup — the eventual first node in the homelab's planned sensor network.</p>
+    </div>
+    <div class="entry">
+      <h3>RV travel</h3>
+      <p>Motorhome ownership, maintenance, and travel.</p>
+    </div>
+  </section>
+
+  <section id="interests">
+    <p class="label">interests</p>
+    <div class="curio-grid">
+      <div class="curio"><h4>Statistical mechanics &amp; kinetics</h4><p>Detailed balance, Kramers' theory, Arrhenius frameworks — the same machinery that shows up in the lab, followed for its own sake.</p></div>
+      <div class="curio"><h4>Ethical AI</h4><p>Reading through Russell, Vallor, Gunkel, Bryson, and Hao on what responsible machine intelligence should look like.</p></div>
+      <div class="curio"><h4>Biophysics of everyday materials</h4><p>Agricultural and horticultural history, and the physical forces shaping consumer markets.</p></div>
+      <div class="curio"><h4>Marine physics &amp; probability</h4><p>Ship buoyancy and metacentric stability on one end, slot-machine volatility on the other — different flavors of the same curiosity.</p></div>
+    </div>
+  </section>
+</div>
+
+<footer id="contact">
+  <div class="wrap">
+    <p class="label">contact</p>
+    <div class="contact-box">
+      <a class="mail" href="mailto:mrelijahavery@gmail.com">mrelijahavery@gmail.com</a>
+      <!-- TODO: replace the # hrefs below with your real GitHub / LinkedIn / Google Scholar URLs -->
+      <div class="links">
+        <a href="#">GitHub ↗</a>
+        <a href="#">LinkedIn ↗</a>
+        <a href="#">Google Scholar ↗</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
