@@ -93,6 +93,16 @@
   .contact-box{border:var(--line); padding:22px 24px;}
   .contact-box a.mail{font-family:'IBM Plex Mono',monospace; font-size:1.05rem; font-weight:600;}
   .links{margin-top:14px; font-family:'IBM Plex Mono',monospace; font-size:0.85rem; display:flex; gap:16px; flex-wrap:wrap;}
+
+  .demo-box{border:var(--line); padding:16px; margin:18px 0;}
+  .demo-box canvas{width:100%; height:auto; display:block;}
+  .controls{display:flex; flex-wrap:wrap; gap:20px; margin:18px 0;}
+  .control{flex:1 1 220px;}
+  .control label{font-family:'IBM Plex Mono',monospace; font-size:0.8rem; display:block; margin-bottom:6px;}
+  .control input[type=range]{width:100%;}
+  .readout{font-family:'IBM Plex Mono',monospace; font-size:0.9rem; margin:6px 0 20px; padding:10px 14px; border:1.5px solid var(--ink); display:inline-block;}
+  .demo-note{font-size:0.85rem; color:var(--muted); max-width:64ch;}
+  
 </style>
 </head>
 <body>
@@ -101,6 +111,7 @@
   <nav>
     <span class="prompt">~/avery $</span>
     <a href="#research">research</a>
+    <a href="#demos">demos</a>
     <a href="#coding">projects</a>
     <a href="#personal">personal</a>
     <a href="#interests">interests</a>
@@ -169,7 +180,34 @@
       <li>Dean's List, four consecutive semesters</li>
     </ul>
   </section>
+  
+<section id="demos">
+  <p class="label">demos</p>
+  <h2 class="title">Brownian motion &amp; the diffusion coefficient</h2>
+  <p>The same physics my DDM pipeline pulls out of correlation functions, made interactive: a cloud of particles executes a random walk, and the diffusion coefficient D sets how fast that cloud spreads. Adjust particle size and temperature — related to D by the Stokes–Einstein equation, D&nbsp;=&nbsp;k<sub>B</sub>T&nbsp;/&nbsp;(6πηr) — and watch the motion and the mean-squared-displacement (MSD) plot respond together.</p>
 
+  <div class="demo-box">
+    <canvas id="particleCanvas" width="680" height="320" aria-label="Animated particles undergoing Brownian motion"></canvas>
+  </div>
+
+  <div class="controls">
+    <div class="control">
+      <label for="radiusInput">particle radius: <span id="radiusVal"></span> nm</label>
+      <input type="range" id="radiusInput" min="20" max="1000" step="10" value="500">
+    </div>
+    <div class="control">
+      <label for="tempInput">temperature: <span id="tempVal"></span> K</label>
+      <input type="range" id="tempInput" min="275" max="320" step="1" value="298">
+    </div>
+  </div>
+  <div class="readout">D = <span id="dVal"></span> µm²/s &nbsp;(in water, Stokes–Einstein)</div>
+
+  <div class="demo-box">
+    <canvas id="msdCanvas" width="680" height="220" aria-label="Mean squared displacement versus time, compared to the theoretical slope"></canvas>
+  </div>
+  <p class="demo-note">Red: measured mean-squared displacement across the particle ensemble. Dashed grey: the theoretical prediction MSD = 4Dt for 2D diffusion, whose slope is exactly D. Simulated time is sped up for visibility, and the run resets once the cloud fills the frame.</p>
+</section>
+  
   <section id="coding">
     <p class="label">projects</p>
 
@@ -224,5 +262,119 @@
   </div>
 </footer>
 
+
+<script>
+(function(){
+  const kB = 1.380649e-23;
+  const eta = 8.9e-4;      // Pa·s, water near room temp, held fixed
+  const pxPerUm = 14;
+  const dtSim = 0.06;      // simulated seconds per frame (accelerated)
+  const N = 160;
+
+  const radiusInput = document.getElementById('radiusInput');
+  const tempInput = document.getElementById('tempInput');
+  const radiusVal = document.getElementById('radiusVal');
+  const tempVal = document.getElementById('tempVal');
+  const dVal = document.getElementById('dVal');
+  const pCanvas = document.getElementById('particleCanvas');
+  const pCtx = pCanvas.getContext('2d');
+  const mCanvas = document.getElementById('msdCanvas');
+  const mCtx = mCanvas.getContext('2d');
+
+  let D = 0, particles = [], t = 0, history = [], resetAt = 10;
+
+  function computeD(){
+    const r_m = (+radiusInput.value) * 1e-9;
+    const T = +tempInput.value;
+    D = (kB * T) / (6 * Math.PI * eta * r_m) * 1e12; // µm²/s
+    radiusVal.textContent = radiusInput.value;
+    tempVal.textContent = tempInput.value;
+    dVal.textContent = D.toFixed(3);
+  }
+
+  function randn(){
+    const u = 1 - Math.random(), v = Math.random();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  }
+
+  function reset(){
+    particles = Array.from({length: N}, () => ({x: 0, y: 0}));
+    t = 0; history = [];
+    const minDimUm = Math.min(pCanvas.width, pCanvas.height) / pxPerUm;
+    resetAt = Math.max(2, (minDimUm * minDimUm / 4) / (4 * D || 1));
+  }
+
+  function step(){
+    const stepStd = Math.sqrt(2 * D * dtSim);
+    let sumSq = 0;
+    for(const p of particles){
+      p.x += randn() * stepStd;
+      p.y += randn() * stepStd;
+      sumSq += p.x*p.x + p.y*p.y;
+    }
+    t += dtSim;
+    history.push([t, sumSq / N]);
+    if(history.length > 400) history.shift();
+    if(t > resetAt) reset();
+  }
+
+  function drawParticles(){
+    pCtx.fillStyle = '#f6f4ef';
+    pCtx.fillRect(0, 0, pCanvas.width, pCanvas.height);
+    const cx = pCanvas.width/2, cy = pCanvas.height/2;
+    pCtx.fillStyle = '#d6001c';
+    for(const p of particles){
+      pCtx.beginPath();
+      pCtx.arc(cx + p.x*pxPerUm, cy + p.y*pxPerUm, 2.6, 0, Math.PI*2);
+      pCtx.fill();
+    }
+    pCtx.strokeStyle = '#0a0a0a'; pCtx.lineWidth = 2;
+    pCtx.strokeRect(1, 1, pCanvas.width-2, pCanvas.height-2);
+  }
+
+  function drawMSD(){
+    mCtx.fillStyle = '#f6f4ef';
+    mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
+    const pad = 34, w = mCanvas.width - pad*1.5, h = mCanvas.height - pad*1.5;
+    const maxT = Math.max(resetAt, t);
+    const maxMSD = Math.max(4*D*maxT, 0.01);
+
+    mCtx.strokeStyle = '#0a0a0a'; mCtx.lineWidth = 1.5;
+    mCtx.beginPath();
+    mCtx.moveTo(pad, 10); mCtx.lineTo(pad, h+pad*0.5); mCtx.lineTo(w+pad, h+pad*0.5);
+    mCtx.stroke();
+    mCtx.fillStyle = '#5c5c5c';
+    mCtx.font = '11px IBM Plex Mono, monospace';
+    mCtx.fillText('MSD (µm²)', 4, 14);
+    mCtx.fillText('t (s, simulated)', w+pad-90, h+pad*0.5+22);
+
+    mCtx.strokeStyle = '#5c5c5c'; mCtx.setLineDash([5,4]); mCtx.lineWidth = 1.5;
+    mCtx.beginPath();
+    mCtx.moveTo(pad, h+pad*0.5);
+    mCtx.lineTo(pad + w, h+pad*0.5 - (4*D*maxT/maxMSD)*h);
+    mCtx.stroke();
+    mCtx.setLineDash([]);
+
+    mCtx.strokeStyle = '#d6001c'; mCtx.lineWidth = 2;
+    mCtx.beginPath();
+    history.forEach(([ht, hm], i) => {
+      const x = pad + (ht/maxT)*w, y = h+pad*0.5 - (hm/maxMSD)*h;
+      if(i === 0) mCtx.moveTo(x, y); else mCtx.lineTo(x, y);
+    });
+    mCtx.stroke();
+    mCtx.strokeStyle = '#0a0a0a'; mCtx.lineWidth = 2;
+    mCtx.strokeRect(1, 1, mCanvas.width-2, mCanvas.height-2);
+  }
+
+  function loop(){
+    step(); drawParticles(); drawMSD();
+    requestAnimationFrame(loop);
+  }
+
+  [radiusInput, tempInput].forEach(el => el.addEventListener('input', () => { computeD(); reset(); }));
+  computeD(); reset();
+  requestAnimationFrame(loop);
+})();
+</script>  
 </body>
 </html>
